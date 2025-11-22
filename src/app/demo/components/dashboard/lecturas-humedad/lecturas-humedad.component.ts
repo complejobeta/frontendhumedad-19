@@ -544,133 +544,130 @@ export class LecturasHumedadComponent implements OnInit {
   }
 
   subscribeToNotifications() {
-    // console.log(this.swPush.isEnabled);
-    // console.log(this.swPush);
     if(this.swPush.isEnabled ){
-      // console.log(this.swPush.isEnabled);
-      // console.log(this.swPush);
+
+      // 1. Verificamos si ya existe una suscripción
       this.swPush.subscription.pipe(take(1)).subscribe(subscription => {
-        if(subscription == null){
+        
+        if(!subscription){
           this.swPush.requestSubscription({
               serverPublicKey: this.VAPID_PUBLIC_KEY,
           })
           .then(sub => {
-            // const browser = this.loadVersionBrowser();
-
-            // const endpointParts = sub.endpoint.split('/');
-            // const registration_id = endpointParts[endpointParts.length - 1];
-            // const data = {
-            //   'browser': browser.name.toUpperCase(),
-            //   'p256dh': btoa(String.fromCharCode.apply(null,Array.from(new Uint8Array(sub.getKey('p256dh')!)))),
-            //   'auth': btoa(String.fromCharCode.apply(null,Array.from(new Uint8Array(sub.getKey('auth')!)))),
-            //   'name': 'telemetry_notifications',
-            //   'registration_id': registration_id
-            // };
-
+            console.log("Navegador suscrito a Push Service:", sub);
+            
+            // 2. Enviamos el objeto 'sub' DIRECTAMENTE al backend.
+            // El backend ya sabe leer 'endpoint' y 'keys' de este objeto.
             this.notificationService.addPushSubscriber(sub).subscribe({
-              next: () => console.log("Suscripción enviadad al servidor"),
-              error: err => console.error("Falló registrar la suscripción", err)
+              next: () => console.log("Suscripción registrada en BD correctamente"),
+              error: err => console.error("Falló registrar la suscripción en BD", err)
             });
           })
-          .catch(err => console.error("Could not subscribe to notifications", err));
+          .catch(err => console.error("El usuario bloqueó las notificaciones o falló el registro:", err));
         }
         else{
-          console.log("Already subscribed to notifications");
+          console.log("El usuario ya estaba suscrito anteriormente");
         }
       });
-
+      
+      // 3. Manejo de Clicks (Cuando el usuario toca la notificación)
       this.swPush.notificationClicks.subscribe({
         next : (payload) =>{
-          window.open(payload.notification.data.url,'_blank');
+          console.log("Notificación clickeada:", payload);
+          // La URL viene dentro de 'data' según nuestro backend
+          const url = payload.notification.data?.url;
+          if (url) {
+            window.open(url, '_blank');
+          }
         }
-      })
+      });
     }
     else{
-      console.log("No se pudo suscribir a las notificaciones")
+      console.log("Service Workers no soportados o deshabilitados en este navegador.")
     }
   }
 
-  urlBase64ToUint8Array (base64String : string) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4)
-    const base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/')
+  // urlBase64ToUint8Array (base64String : string) {
+  //   const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  //   const base64 = (base64String + padding)
+  //           .replace(/\-/g, '+')
+  //           .replace(/_/g, '/')
 
-    const rawData = window.atob(base64)
-    const outputArray = new Uint8Array(rawData.length)
+  //   const rawData = window.atob(base64)
+  //   const outputArray = new Uint8Array(rawData.length)
 
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i)
-    }
-    return outputArray;
-  }
+  //   for (let i = 0; i < rawData.length; ++i) {
+  //     outputArray[i] = rawData.charCodeAt(i)
+  //   }
+  //   return outputArray;
+  // }
 
-  loadVersionBrowser () {
-    if ("userAgentData" in navigator) {
-      // navigator.userAgentData is not available in
-      // Firefox and Safari
-      const uaData = (navigator as any)['userAgentData'];
-      // Outputs of navigator.userAgentData.brands[n].brand are e.g.
-      // Chrome: 'Google Chrome'
-      // Edge: 'Microsoft Edge'
-      // Opera: 'Opera'
-      let browsername = '';
-      let browserversion = '';
-      let chromeVersion: string  | null = null;
-      for (let i = 0; i < uaData.brands.length; i++) {
-        const brand = uaData!.brands[i].brand;
-        browserversion = uaData.brands[i].version;
-        if (brand.match(/opera|chrome|edge|safari|firefox|msie|trident/i) !== null) {
-          // If we have a chrome match, save the match, but try to find another match
-          // E.g. Edge can also produce a false Chrome match.
-          if (brand.match(/chrome/i) !== null) {
-            chromeVersion = browserversion;
-          }
-          // If this is not a chrome match return immediately
-          else {
-            browsername = brand.substr(brand.indexOf(' ')+1);
-            return {
-              name: browsername,
-              version: browserversion
-            }
-          }
-        }
-      }
-      // No non-Chrome match was found. If we have a chrome match, return it.
-      if (chromeVersion !== null) {
-        return {
-          name: "chrome",
-          version: chromeVersion
-        }
-      }
-    }
-    // If no userAgentData is not present, or if no match via userAgentData was found,
-    // try to extract the browser name and version from userAgent
-    const userAgent = navigator.userAgent;
-    const M = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    // const ua = userAgent, tem, M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    let tem;
-    if (/trident/i.test(M[1])) {
-      tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
-      return {name: 'IE', version: (tem[1] || '')};
-    }
-    if (M[1] === 'Chrome') {
-      tem = userAgent.match(/\bOPR\/(\d+)/);
-      if (tem != null) {
-        return {name: 'Opera', version: tem[1]};
-      }
-    }
+  // loadVersionBrowser () {
+  //   if ("userAgentData" in navigator) {
+  //     // navigator.userAgentData is not available in
+  //     // Firefox and Safari
+  //     const uaData = (navigator as any)['userAgentData'];
+  //     // Outputs of navigator.userAgentData.brands[n].brand are e.g.
+  //     // Chrome: 'Google Chrome'
+  //     // Edge: 'Microsoft Edge'
+  //     // Opera: 'Opera'
+  //     let browsername = '';
+  //     let browserversion = '';
+  //     let chromeVersion: string  | null = null;
+  //     for (let i = 0; i < uaData.brands.length; i++) {
+  //       const brand = uaData!.brands[i].brand;
+  //       browserversion = uaData.brands[i].version;
+  //       if (brand.match(/opera|chrome|edge|safari|firefox|msie|trident/i) !== null) {
+  //         // If we have a chrome match, save the match, but try to find another match
+  //         // E.g. Edge can also produce a false Chrome match.
+  //         if (brand.match(/chrome/i) !== null) {
+  //           chromeVersion = browserversion;
+  //         }
+  //         // If this is not a chrome match return immediately
+  //         else {
+  //           browsername = brand.substr(brand.indexOf(' ')+1);
+  //           return {
+  //             name: browsername,
+  //             version: browserversion
+  //           }
+  //         }
+  //       }
+  //     }
+  //     // No non-Chrome match was found. If we have a chrome match, return it.
+  //     if (chromeVersion !== null) {
+  //       return {
+  //         name: "chrome",
+  //         version: chromeVersion
+  //       }
+  //     }
+  //   }
+  //   // If no userAgentData is not present, or if no match via userAgentData was found,
+  //   // try to extract the browser name and version from userAgent
+  //   const userAgent = navigator.userAgent;
+  //   const M = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  //   // const ua = userAgent, tem, M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  //   let tem;
+  //   if (/trident/i.test(M[1])) {
+  //     tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+  //     return {name: 'IE', version: (tem[1] || '')};
+  //   }
+  //   if (M[1] === 'Chrome') {
+  //     tem = userAgent.match(/\bOPR\/(\d+)/);
+  //     if (tem != null) {
+  //       return {name: 'Opera', version: tem[1]};
+  //     }
+  //   }
 
-    const name = M[1] || navigator.appName;
-    const version = M[2] || navigator.appVersion;
-    return { name, version };
-    // M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-    // if ((tem = userAgent.match(/version\/(\d+)/i)) != null) {
-    //   M.splice(1, 1, tem[1]);
-    // }
-    // return {
-    //   name: M[0],
-    //   version: M[1]
-    // };
-  }
+  //   const name = M[1] || navigator.appName;
+  //   const version = M[2] || navigator.appVersion;
+  //   return { name, version };
+  //   // M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+  //   // if ((tem = userAgent.match(/version\/(\d+)/i)) != null) {
+  //   //   M.splice(1, 1, tem[1]);
+  //   // }
+  //   // return {
+  //   //   name: M[0],
+  //   //   version: M[1]
+  //   // };
+  // }
 }
