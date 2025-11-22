@@ -66,10 +66,11 @@ export class LecturasHumedadComponent implements OnInit {
   promedioTemperatura: number = 0;
   //Detalles de configuración
   detallesConfig: any;
-
+  
   rangosGuiasConfig: any[] = [];
-
+  
   estadoSensorConfig: any;
+  estadoBateriaUps: any;
 
   // Array de líneas de referencia
   referenceLines: { yAxis: number; color: string; type: string }[] = [];
@@ -133,6 +134,7 @@ export class LecturasHumedadComponent implements OnInit {
               //console.log('actualizado de lineas:',data)
               this.obtenerRangosGuiasConfig(this.seleccionableConfigId);
               this.obtenerEstadoSensorConfig(this.seleccionableConfigId);
+              this.obtenerBateriaUpsConfig(this.seleccionableConfigId);
               this.messageService.add({ severity: 'success', summary: 'Editado', detail: 'Registro editado correctamente'});
             },
             error: err => console.error('Error al actualizar:', err)
@@ -150,6 +152,7 @@ export class LecturasHumedadComponent implements OnInit {
               //console.log('Linea Agregado:', data)
               this.obtenerRangosGuiasConfig(this.seleccionableConfigId);
               this.obtenerEstadoSensorConfig(this.seleccionableConfigId);
+              this.obtenerBateriaUpsConfig(this.seleccionableConfigId);
               this.messageService.add({ severity: 'success', summary: 'Registrado', detail: 'Registro agregado correctamente'});
             },
             error: err => console.error('Error al agregar rangos:', err)
@@ -169,6 +172,7 @@ export class LecturasHumedadComponent implements OnInit {
         this.rangoGuiaService.delete(id).subscribe(() => {
           this.obtenerRangosGuiasConfig(this.seleccionableConfigId);
           this.obtenerEstadoSensorConfig(this.seleccionableConfigId);
+          this.obtenerBateriaUpsConfig(this.seleccionableConfigId);
           this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Registro Eliminado correctamente'});
         });
       },
@@ -201,6 +205,7 @@ export class LecturasHumedadComponent implements OnInit {
     this.obtenerDetallesConfig(id);
     this.obtenerRangosGuiasConfig(id);
     this.obtenerEstadoSensorConfig(id);
+    this.obtenerBateriaUpsConfig(id);
   }
 
   //Carga las configuraciones en el select
@@ -257,6 +262,7 @@ export class LecturasHumedadComponent implements OnInit {
     )
   }
 
+
   obtenerRangosGuiasConfig(configuracionId: number): void {
     this.lecturahumedadService.RangoGuiasConfiguraciones(configuracionId).subscribe(
       (data) => {
@@ -271,7 +277,17 @@ export class LecturasHumedadComponent implements OnInit {
       (data) => {
         this.estadoSensorConfig = data;
         //console.log();
-        //console.log('Estado de sensor:', this.estadoSensorConfig);
+        // console.log('Estado de sensor:', this.estadoSensorConfig);
+      }
+    )
+  }
+
+  obtenerBateriaUpsConfig(configuracionId: number): void {
+    this.lecturahumedadService.EstadoBateriaConfig(configuracionId).subscribe(
+      (data) => {
+        this.estadoBateriaUps = data;
+        //console.log();
+        // console.log('Estado de bateria:', this.estadoBateriaUps);
       }
     )
   }
