@@ -2,7 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart } from 'echarts/charts';
-import { GridComponent } from 'echarts/components';
+import { GridComponent, TitleComponent, TooltipComponent,TransformComponent, DatasetComponent } from 'echarts/components';
+/**Funciones como Transición universal y Diseño de etiquetas */
+import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import { SHARED_FORMULARIOS_IMPORTS } from 'src/app/shared/shared-imports';
 import { LecturahumedadService } from 'src/app/core/services/graficos/lecturahumedad/lecturahumedad.service';
@@ -38,13 +40,31 @@ import { Subscription, take } from 'rxjs';
 
 import { SwPush, } from '@angular/service-worker';
 import { NotificationService } from 'src/app/core/services/pushnotification/notification.service';
+
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
+
+
 //import { CommonModule } from '@angular/common';
 //import 'echarts/theme/dark'; // Importa un tema
-echarts.use([BarChart, GridComponent, CanvasRenderer, LineChart]);
+echarts.use([
+  BarChart, 
+  GridComponent, 
+  CanvasRenderer, 
+  LineChart,
+  /** Nuevo*/
+  LabelLayout,
+  UniversalTransition,
+  DatasetComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent
+
+]);
 
 @Component({
   selector: 'app-lecturas-humedad',
-  imports: [SHARED_FORMULARIOS_IMPORTS,ToolbarModule, MenuModule,PanelModule, FloatLabel, IftaLabelModule,SelectModule,CardModule,BadgeModule, Knob, RippleModule, InputNumberModule, ColorPickerModule, CalendarModule, NgxEchartsDirective, ButtonModule, DropdownModule, MenubarModule, InputGroupModule, ToggleButtonModule, TagModule, TooltipModule],
+  imports: [FormsModule,MultiSelectModule, SHARED_FORMULARIOS_IMPORTS,ToolbarModule, MenuModule,PanelModule, FloatLabel, IftaLabelModule,SelectModule,CardModule,BadgeModule, Knob, RippleModule, InputNumberModule, ColorPickerModule, CalendarModule, NgxEchartsDirective, ButtonModule, DropdownModule, MenubarModule, InputGroupModule, ToggleButtonModule, TagModule, TooltipModule],
   templateUrl: './lecturas-humedad.component.html',
   styleUrl: './lecturas-humedad.component.scss',
   providers: [
@@ -80,6 +100,11 @@ export class LecturasHumedadComponent implements OnInit {
   // private readonly VAPID_PUBLIC_KEY = 'BHmL8Yw1J-LvmkW_7eafcA6DSL14EfGwq91PXx6GiV3AJd5Rwzr2hlhFsJuscWZF0Bx0UDHKGFZBSqZQfxJ3__k';
   private readonly VAPID_PUBLIC_KEY = 'BEHxaLqVc_RRgYtf_03d5feWRL1dIT4NkKOHuSidsX_-yNBHTfIeG4Ef2HkgT2iZfsmaUPo7FPwJ11D_TvouMRc';
 
+  /**Grafico sumado */
+  nivelesDisponibles = [1,2,3,4,5]; // Niveles disponibles para seleccionar
+  nivelesSeleccionados: number[] = [1]; // Niveles seleccionados por defecto
+
+
   constructor(
     private lecturahumedadService: LecturahumedadService, 
     private rangoGuiaService: RangoGuiasService,
@@ -104,8 +129,13 @@ export class LecturasHumedadComponent implements OnInit {
   lineTypes = [
     { label: 'Línea Sólida ___', value: 'solid' },
     { label: 'Línea Punteada _ _ _', value: 'dashed' },
-    { label: 'Línea Discontinua ......', value: 'dotted' }
+    { label: 'Línea Discontinua .....', value: 'dotted' }
   ];
+
+  actualizarGrafico() {
+    console.log('Niveles seleccionados:', this.nivelesSeleccionados);
+    // aquí puedes llamar a procesarLecturas o recargar datos
+  }
 
   CargarDatosModal(entidad: IRangoGuias) {
     this.entidad = { ...entidad };
@@ -233,6 +263,7 @@ export class LecturasHumedadComponent implements OnInit {
       (data) => {
         //console.log('datos sensor:', data);
         this.procesarLecturas(data);
+        this.procesarNiveles(data);
       },
       (error) => {
         console.error('Error al obtener datos:', error);
@@ -292,6 +323,22 @@ export class LecturasHumedadComponent implements OnInit {
     )
   }
   
+  /**
+   * Esta función carga los datos de lectura de humedad y temperatura para un ID de configuración seleccionable y un rango de fechas.
+   * @returns {void}
+   * @memberof LecturasHumedadComponent
+   * Carga los datos de lectura de humedad y temperatura para un ID de configuración seleccionable y un rango de fechas.
+   * Si el ID de configuración es nulo, no realiza ninguna acción.
+   * @description
+   * Esta función se utiliza para obtener los datos de lectura de humedad y temperatura desde un servicio.
+   * Utiliza el servicio `LecturahumedadService` para realizar una solicitud a la API y obtener los datos filtrados por el ID de configuración y las fechas de inicio y fin.
+   * Si el ID de configuración es nulo, no realiza ninguna acción.
+   * Los datos obtenidos se procesan mediante las funciones `procesarLecturas` y `procesarNiveles`.
+   * Si ocurre un error al obtener los datos, se muestra un mensaje de error en la consola.
+   * @example
+   * ```typescript
+   * loadDataWithDates();
+   */
   loadDataWithDates(): void {
     if (this. seleccionableConfigId !== null) {
       //console.log('Id seleccionado:', this. seleccionableConfigId);
@@ -301,6 +348,7 @@ export class LecturasHumedadComponent implements OnInit {
         (data) => {
           //console.log('datos sensor con filtro:', data);
           this.procesarLecturas(data);
+          this.procesarNiveles(data);
         },
         (error) => {
           console.error('Error al obtener datos:', error);
@@ -309,6 +357,12 @@ export class LecturasHumedadComponent implements OnInit {
     }
   }
 
+  /**
+   * @param data 
+   * Esta función procesa los datos de lectura de humedad y temperatura, y genera un gráfico utilizando ECharts.
+   * @returns void
+   * Procesa los datos de lectura de humedad y temperatura, y genera un gráfico utilizando ECharts.
+   */
   procesarLecturas(data: any): void {
     const echarts = require('echarts');
     const chartDom = document.getElementById('main')!;
@@ -438,8 +492,29 @@ export class LecturasHumedadComponent implements OnInit {
         // {
         //   startValue: '2025-01-30 12:00:17' //Valor por el cual iniciará mostrando por defecto
         // },
-        {type: 'inside'}, //permite deslizarnos/navegación por el grafico
-        { type: 'slider' }, // Para desktops
+        // {type: 'inside'}, //permite deslizarnos/navegación por el grafico // esto estaba antes de traerme los cambios que guarde en pc antigua
+        // { type: 'slider' }, // Para desktops // esto estaba antes de traerme los cambios que guarde en pc antigua
+      
+        {
+          type: 'slider',
+          xAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'slider',
+          yAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'inside',
+          xAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'inside',
+          yAxisIndex: 0,
+          filterMode: 'none'
+        }
       ],
       series: series,
     };
@@ -475,6 +550,127 @@ export class LecturasHumedadComponent implements OnInit {
       },
       lineStyle: { color: range.color, type: range.type } }
     ));
+  }
+
+  /**
+   * Esta función toma los datos de la serie y los niveles seleccionados, y devuelve un array con la suma de los valores de los niveles seleccionados para cada punto en el tiempo.
+   * @param serieData - Array de arrays, donde cada sub-array representa los datos de un nivel.
+   * @param niveles - Array de números que representan los niveles seleccionados.
+   * @returns Un array con la suma de los valores de los niveles seleccionados para cada punto en el tiempo.
+   * Calcula la suma de los niveles seleccionados 
+   */
+  calcularSumaNiveles(serieData: number[][], niveles: number[]): number[] {
+    return serieData[0].map((_, i) =>
+      niveles.reduce((sum, nivel) => sum + serieData[nivel - 1][i], 0)
+    );
+  }
+
+  /**
+   * Esta función procesa los datos de niveles y genera un gráfico de líneas utilizando ECharts.
+   * @param data - Objeto que contiene los datos de niveles, incluyendo fecha_hora y humedad.
+   * @returns void
+   * Procesa los datos de niveles y genera un gráfico de líneas utilizando ECharts.
+   */
+  procesarNiveles(data: any): void {
+    const echarts = require('echarts');
+    const DomChart = document.getElementById('nivelesChart');
+    const chartNiveles = echarts.init(DomChart, 'dark', {
+      renderer: 'canvas',
+      useDirtyRect: false
+    }); //, 'dark'
+
+    const fecha_hora = data.fecha_hora;
+    const humedadSeries = data.humedad; 
+
+    const series = []; // Array para almacenar las series de datos
+
+    if(this.showHumedadData){
+      const totalSeleccionados = this.calcularSumaNiveles(humedadSeries, this.nivelesSeleccionados);
+
+      series.push({
+        name: `Suma de niveles: ${this.nivelesSeleccionados.join(', ')}`,
+        type: 'line',
+        data: totalSeleccionados,
+        lineStyle: {
+          width: 3,
+          type: 'solid', // Tipo de línea sólida
+          color: '#1e90ff' // Color de la línea
+        },
+        Symbol: 'circle' // Cambia el símbolo a círculo
+      });
+    }
+
+    const option = {
+      //backgroundColor: '#232526', //roundColor: '#0f375f',
+      tooltip: {
+        trigger: 'axis',
+        confine: true
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '15%',
+        top: '15%',
+        containLabel: true,
+      },
+      legend: {
+        data: series.map((s) => s.name),
+        type: 'scroll',
+        top: 8,
+        textStyle: {
+          fontSize: window.innerWidth < 768 ? 12 : 14
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: fecha_hora,
+        rotate: 45,
+      },
+      yAxis: {},
+      toolbox: {
+        right: 5,
+        top: 5,
+        feature: {
+          dataZoom: { yAxisIndex: 0 },
+          dataView: { readOnly: false },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      dataZoom: [
+        // { type: 'inside' },
+        // { type: 'slider' }
+        /**Esto para que tenga zoom horizontal y vertical */
+        {
+          type: 'slider',
+          xAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'slider',
+          yAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'inside',
+          xAxisIndex: 0,
+          filterMode: 'none'
+        },
+        {
+          type: 'inside',
+          yAxisIndex: 0,
+          filterMode: 'none'
+        }
+      ],
+      series: series,
+    };
+    chartNiveles.setOption(option);
+  }
+
+  actualizarGraficoNivel(){
+    if (this.seleccionableConfigId){
+      this.cargarLecturasHumedad(this.seleccionableConfigId, this.fechaInicio, this.fechaFin);
+    }
   }
   
   abrirModal(){

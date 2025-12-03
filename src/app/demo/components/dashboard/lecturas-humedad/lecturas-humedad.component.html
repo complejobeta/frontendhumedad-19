@@ -158,6 +158,16 @@
     </div>
 </div>
 
+<p-multiSelect
+    [options]="nivelesDisponibles"
+    [(ngModel)]="nivelesSeleccionados"
+    (onChange)="actualizarGraficoNivel()"
+    placeholder="Seleccionar nivel"
+    class="w-full mb-3"
+></p-multiSelect>
+
+<div echarts id="nivelesChart" class="demo-chart chart-rounded">
+</div>   
 
 <p-dialog 
     [(visible)]="displayModal" 

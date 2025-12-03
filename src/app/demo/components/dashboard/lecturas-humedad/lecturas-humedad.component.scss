@@ -21,6 +21,12 @@ $border-radius: 12px;
   transition: all 0.3s ease-in-out;
 }
 
+/** Estilo para gráficos */
+.chart-rounded {
+  border-radius: 0.5px; // Redondeo de esquinas
+  //overflow: hidden;   // Oculta cualquier borde sobresaliente del gráfico
+}
+
 // Tarjetas de promedios
 .avg-card {
   text-align: center;
