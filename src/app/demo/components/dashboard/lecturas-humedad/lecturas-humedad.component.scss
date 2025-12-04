@@ -139,11 +139,26 @@ $border-radius: 12px;
   width: 100% !important;  /* Fuerza el ancho completo */
   //height: 400px; /* Altura fija, pero puedes usar vh si prefieres */
   //min-height: 400px; /* Mínimo para móviles */
-  resize: both; /* Permite redimensionar (opcional) */
+  // resize: both; /* Permite redimensionar (opcional) */
   height: 70vh;  /* Altura relativa al viewport */
+  min-height: 350px; // Importante: evita que se aplaste demasiado en landscape
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; // Evita scrollbars fantasmas
+}
+
+// Ajuste fino para móviles
+@media (max-width: 768px) {
+  .demo-chart {
+    height: 60vh; // Un poco menos de altura en móvil para ver el resto del contenido
+    padding: 0;   // Quitar padding interno si existiera
+  }
+  
+  // Forzar que el contenedor de la tarjeta no coma espacio lateral
+  .card-body {
+     padding: 0.5rem !important; // Reducir padding de la tarjeta contenedora
+  }
 }
   
 @media (min-width: 320px) {

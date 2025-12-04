@@ -357,6 +357,182 @@ export class LecturasHumedadComponent implements OnInit {
     }
   }
 
+  // Agrega esto dentro de tu clase, antes del constructor o al final
+  // private getChartOption(series: any[], xAxisData: any[], isMobile: boolean, colorLineas: any[] = []): any {
+  //   const gridTop = isMobile ? 50 : '15%'; 
+  //   const gridBottom = isMobile ? 85 : '15%'; 
+  //   const gridRight = isMobile ? 45 : '4%'; // 45px a la derecha para el slider vertical
+  //   const gridLeft = isMobile ? 35 : '3%';
+    
+  //   return {
+  //     tooltip: {
+  //       trigger: 'axis',
+  //       confine: true,
+  //       textStyle: { fontSize: isMobile ? 11 : 14 }
+  //     },
+  //     // CAPA SUPERIOR: El Gráfico
+  //     grid: {
+  //       top: gridTop,
+  //       bottom: gridBottom,
+  //       right: gridRight, 
+  //       left: gridLeft,
+  //       containLabel: true,
+  //     },
+  //     // CAPA MEDIA: La Leyenda
+  //     legend: {
+  //       data: series.map((s) => s.name),
+  //       type: 'scroll',
+  //       orient: 'horizontal',
+  //       // En Móvil: La ponemos ARRIBA del zoom pero DEBAJO del gráfico
+  //       bottom: isMobile ? '12%' : 'auto', 
+  //       top: isMobile ? 'auto' : 5,
+
+  //       left: 'center',
+  //       width: isMobile ? '85%' : 'auto', // Menos ancho en móvil para no tapar zoom vertical
+  //       textStyle: { fontSize: isMobile ? 11 : 12 },
+  //       itemGap: 15
+  //     },
+  //     // CAPA INFERIOR: El Zoom Slider
+  //     dataZoom: [
+  //       {
+  //         type: 'slider',
+  //         xAxisIndex: 0,
+  //         filterMode: 'none',
+  //         height: 25,     // Altura fija
+  //         bottom: 0,      // Pegado al suelo absoluto
+  //         left: '5%',     // Un poco de margen lateral
+  //         right: '10%',   // Dejar espacio a la derecha para que no choque con el zoom vertical
+  //         handleSize: '100%'
+  //       },
+  //       // Zoom Táctil (Dedos en la pantalla)
+  //       {
+  //         type: 'inside',
+  //         xAxisIndex: 0,
+  //         filterMode: 'none'
+  //       },
+  //       {
+  //         type: 'inside',
+  //         yAxisIndex: 0,
+  //         filterMode: 'none'
+  //       }
+  //       // ... tus otros zooms verticales si los necesitas
+  //     ],
+  //     toolbox: {
+  //       show: true,
+  //       top: 0,
+  //       right: isMobile ? 0 : 10, // A la derecha
+  //       itemSize: isMobile ? 16 : 18, // Iconos legibles
+  //       itemGap: 15, // Separación entre iconos
+  //       feature: {
+  //         dataZoom: { yAxisIndex: 'none', title: { zoom: 'Zoom', back: 'Reset' } },
+  //         restore: { title: 'Restaurar' },
+  //         saveAsImage: { title: 'Guardar' }
+  //       }
+  //     },
+  //     xAxis: {
+  //       type: 'category',
+  //       data: xAxisData,
+  //       rotate: 45,
+  //       axisLabel: { 
+  //         fontSize: isMobile ? 10 : 11,
+  //         interval: 'auto' // ECharts decide cuántas mostrar para que no se solapen
+  //       }
+  //     },
+  //     yAxis: {
+  //       type: 'value',
+  //       axisLabel: { fontSize: isMobile ? 10 : 11 }
+  //     },
+  //     series: series,
+  //   };
+  // }
+
+  // procesarLecturas(data: any): void {
+  //   const chartDom = document.getElementById('main')!;
+  //   const mychart = echarts.init(chartDom);
+    
+  //   // 1. Detectar si es móvil
+  //   const isMobile = window.innerWidth < 768;
+
+  //   // ... (Tu lógica existente para preparar series y markLines sigue igual) ...
+  //   // ... (Calcula minValue, maxValue, llena el array 'series') ...
+  //   // const fecha_hora = data.fecha_hora;
+  //   const humedadSeries = data.humedad;
+  //   const temperaturaSeries = data.temperatura;
+
+  //   //console.log(temperaturaSeries);
+
+  //   //Crear las series para el grafico
+  //   const series = [];
+  //   //const margin = 5; // Margen adicional
+  //   let minValue = Infinity;
+  //   let maxValue = -Infinity;
+
+  //   if (this.showTemperaturaData) {
+  //     this.showTemperaturaData = true;
+  //     this.showHumedadData = false;
+  //     for (let i = 0; i < 5; i++) {
+  //       const data = temperaturaSeries[i];
+      
+  //       series.push({
+  //         name:`N. Temp ${i + 1}`,
+  //         type: 'line',
+  //         data: temperaturaSeries[i],
+  //         markLine: {
+  //           silent: false,
+  //           animation: true,
+  //           data: this.generarMarkLines(),
+            
+  //         }
+  //       });
+  //     }
+  //   }
+
+  //   if (this.showHumedadData) {
+  //     this.showHumedadData = true;
+  //     this.showTemperaturaData = false;
+  //     for (let i = 0; i < 5; i++) {
+
+  //       const data = humedadSeries[i];
+      
+  //       // Calcular el mínimo y máximo de los datos actuales
+  //       const currentMin = Math.min(...data);
+  //       const currentMax = Math.max(...data);
+
+  //       // Actualizar el mínimo y máximo global
+  //       if (currentMin < minValue) {
+  //         minValue = currentMin;
+  //       }
+  //       if (currentMax > maxValue) {
+  //         maxValue = currentMax;
+  //       }
+
+  //       series.push({
+  //         name:`N. Hum ${i + 1}`,
+  //         type: 'line',
+  //         data: humedadSeries[i],
+  //         markLine: {
+  //           silent: false,
+  //           data: this.generarMarkLines(),
+  //           animation: true,
+  //         }
+  //       });
+  //     }
+  //   }
+
+  //   // 2. Usar la nueva función centralizada
+  //   const option = this.getChartOption(series, data.fecha_hora, isMobile);
+
+  //   mychart.setOption(option);
+    
+  //   // Listener para redimensionar
+  //   window.addEventListener('resize', () => {
+  //     mychart.resize();
+  //     // Opcional: Si quieres que recalcule la posición al girar la pantalla:
+  //     // const newIsMobile = window.innerWidth < 768;
+  //     // mychart.setOption(this.getChartOption(series, data.fecha_hora, newIsMobile));
+  //   });
+  // }
+
   /**
    * @param data 
    * Esta función procesa los datos de lectura de humedad y temperatura, y genera un gráfico utilizando ECharts.
@@ -431,94 +607,162 @@ export class LecturasHumedadComponent implements OnInit {
         });
       }
     }
-    //console.log(series);
+
+    const renderResponsiveChart = () => {
+      // 1. Detectar si es móvil
+      const isMobile = window.innerWidth < 768;
     
-    const option = {
-      //backgroundColor: '#232526', //roundColor: '#0f375f',
-      // title: {
-      //   text: 'Gráfico', //Titulo del grafico
-      //   left: '1%', //Esto es para aplicar negrita
-      //   // textStyle: {
-      //   //   color: '#ccc'
-      //   // }
-      // },
-      tooltip: {
-        trigger: 'axis', //Linea de guia vertical al cursar el grafico (simplifica la visualización de datos ya que no tienes que cursar al punto especifico, sino que es más dinamico)
-        confine: true
-      },
-      grid: {
-        left: '3%',    // Márgenes más ajustados en móviles
-        right: '4%',
-        bottom: '15%',
-        top: '15%',
-        containLabel: true,  // ¡Importante! Evita que las etiquetas se salgan
-      },
-      legend: {
-        data: series.map((s) => s.name), //Nombre de las series para las leyendas
-        //pageIconSize: 10,
-        //pageTextStyle: { fontSize: 10 },
-        type: 'scroll',  // Permite desplazamiento si hay muchas leyendas
-        //top: window.innerWidth < 768 ? 'bottom' : '7%',
-        textStyle: {
-          fontSize: window.innerWidth < 768 ? 12 : 14  // Ajuste del tamaño de texto
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: fecha_hora,
-        rotate: 45,         // Rotar etiquetas si es necesario
-        fontSize: 10,       // Tamaño reducido en móviles
-        //splitLine: { show: true }, //Con eso se marcan lineas de forma vertical
-        // textStyle: {
-        //   color: '#ccc'
-        // }
-      },
-      yAxis: {},
-      toolbox: { //Esto funciona para habilitar opciones interactivas en el grafico
-        //right: 10, //Posiciona al lado izquierdo las opciones a habilitar
-        feature: { //Opciones
-          dataZoom: { //Para poder realizar zoom al grafico
-            yAxisIndex: 'none'
+      const option = {
+        tooltip: {
+          trigger: 'axis', //Linea de guia vertical al cursar el grafico (simplifica la visualización de datos ya que no tienes que cursar al punto especifico, sino que es más dinamico)
+          confine: true, // Mantiene el tooltip dentro del canvas (crítico para móvil)        
+          textStyle: {
+            fontSize: isMobile ? 11 : 14 // Texto más pequeño en tooltip móvil
+          }
+        },
+        grid: {
+          left: '3%',    // Márgenes más ajustados en móviles
+          right: '4%',
+          // En móvil damos más aire abajo para la leyenda, o arriba si decidimos apilar
+          top: '15%', 
+          bottom: '15%',
+          containLabel: true,  // ¡Importante! Evita que las etiquetas se salgan
+        },
+        legend: {
+          data: series.map((s) => s.name), //Nombre de las series para las leyendas
+          type: 'scroll',  // Permite desplazamiento si hay muchas leyendas
+          //pageIconSize: 10,
+          //pageTextStyle: { fontSize: 10 },
+          //top: window.innerWidth < 768 ? 'bottom' : '7%',
+          top: isMobile ? 'auto' : 5,
+          bottom: isMobile ? 0 : 'auto', 
+          left: isMobile ? 'center' : 'left', 
+          width: isMobile ? '90%' : 'auto', // Limita el ancho para forzar scroll si es necesario
+          textStyle: {
+            fontSize: isMobile ? 10 : 12 
           },
-          dataView: { readOnly: false },
-          restore: {}, //Restaurar el grafico a su posición inicial
-          saveAsImage: {} //Habilita el la exportación del grafico en formato png
+          itemGap: isMobile ? 10 : 20,
+          pageButtonPosition: 'end' // Flechas de scroll al final
+          // textStyle: {
+          //   fontSize: window.innerWidth < 768 ? 12 : 14  // Ajuste del tamaño de texto
+          // }
         },
-        // textStyle: {
-        //   color: '#ccc'
-        // }
-      },
-      dataZoom: [ //Configuracion adicional de zoom
-        // {
-        //   startValue: '2025-01-30 12:00:17' //Valor por el cual iniciará mostrando por defecto
-        // },
-        // {type: 'inside'}, //permite deslizarnos/navegación por el grafico // esto estaba antes de traerme los cambios que guarde en pc antigua
-        // { type: 'slider' }, // Para desktops // esto estaba antes de traerme los cambios que guarde en pc antigua
-      
-        {
-          type: 'slider',
-          xAxisIndex: 0,
-          filterMode: 'none'
+        xAxis: {
+          type: 'category',
+          data: fecha_hora,
+          rotate: 45,         // Rotar etiquetas si es necesario
+          axisLabel: {
+            // 1. INTERVALO: 'auto' deja que ECharts oculte las que no caben.
+            interval: 'auto',
+            // 2. ROTACIÓN: 0 grados en móvil (para leer recto) o 45 si hay muchas
+            rotate: isMobile ? 0 : 45,
+            // 3. TAMAÑO DE FUENTE
+            fontSize: isMobile ? 9 : 11,
+
+            // 4. EL FORMATEADOR (La parte mágica)
+            formatter: (value: string) => {
+              // Asumimos que value viene como "2025-12-03 10:26:03"
+              if (!value) return '';
+
+              // Creamos un objeto fecha (asegúrate que el string sea compatible)
+              // O simplemente manipulamos el string si el formato es fijo:
+              const partes = value.split(' '); // Separa ["2025-12-03", "10:26:03"]
+              
+              if (partes.length < 2) return value; // Si no tiene formato esperado, devuelve original
+              
+              const fecha = partes[0]; // 2025-12-03
+              const hora = partes[1].substring(0, 5); // 10:26 (quitamos los segundos si quieres)
+              
+              // Extraemos día y mes para hacerlo corto: 2025-12-03 -> 03/12
+              const fechaCorta = fecha.split('-').reverse().slice(0, 2).join('/'); 
+
+              if (isMobile) {
+                // EN MÓVIL: Dos líneas.
+                // Línea 1: Hora (más importante)
+                // Línea 2: Día/Mes
+                return `${hora}\n${fechaCorta}`;
+              } else {
+                // EN DESKTOP: Todo en una línea pero limpio
+                return `${fechaCorta} ${hora}`;
+              }
+            },
+            
+            // Ajuste de alineación para cuando usamos salto de línea
+            lineHeight: 14
+          }
+          // fontSize: 10,       // Tamaño reducido en móviles
+          //splitLine: { show: true }, //Con eso se marcan lineas de forma vertical
+          // textStyle: {
+          //   color: '#ccc'
+          // }
         },
-        {
-          type: 'slider',
-          yAxisIndex: 0,
-          filterMode: 'none'
+        yAxis: {},
+        toolbox: { //Esto funciona para habilitar opciones interactivas en el grafico
+          //right: 10, //Posiciona al lado izquierdo las opciones a habilitar
+          show: true, // Asegúrate de que esté true
+          top: 0,     // Pegado arriba
+          right: 10,  // A la derecha
+          itemSize: isMobile ? 14 : 18, // Iconos más pequeños en móvil para ganar espacio
+          itemGap: isMobile ? 12 : 10,  // Separación entre iconos
+          feature: { //Opciones
+            //Para poder realizar zoom al grafico
+            dataZoom: { yAxisIndex: 'none', title: { zoom: 'Zoom', back: 'Restaurar' } },
+            dataView: { readOnly: false, title: 'Ver datos' },
+            restore: {title: 'Restaurar'}, //Restaurar el grafico a su posición inicial
+            saveAsImage: {title: 'Guardar'} //Habilita el la exportación del grafico en formato png
+          },
+          // textStyle: {
+          //   color: '#ccc'
+          // }
         },
-        {
-          type: 'inside',
-          xAxisIndex: 0,
-          filterMode: 'none'
-        },
-        {
-          type: 'inside',
-          yAxisIndex: 0,
-          filterMode: 'none'
-        }
-      ],
-      series: series,
+        dataZoom: [ //Configuracion adicional de zoom
+          // {
+          //   startValue: '2025-01-30 12:00:17' //Valor por el cual iniciará mostrando por defecto
+          // },
+          // {type: 'inside'}, //permite deslizarnos/navegación por el grafico // esto estaba antes de traerme los cambios que guarde en pc antigua
+          // { type: 'slider' }, // Para desktops // esto estaba antes de traerme los cambios que guarde en pc antigua
+        
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            height: isMobile ? 15 : 30, // Hacemos la barra un poco más delgada en móvil
+            // bottom: 0,  // Pegado al fondo absoluto
+            handleSize: '100%' // Facilita el agarre con el dedo
+          },
+          {
+            type: 'slider',
+            yAxisIndex: 0,
+            filterMode: 'none',
+            width: isMobile ? 15 : 30,
+            // handleSize: '100%'
+          },
+          {
+            type: 'inside',
+            xAxisIndex: 0,
+            filterMode: 'none'
+          },
+          {
+            type: 'inside',
+            yAxisIndex: 0,
+            filterMode: 'none'
+          }
+        ],
+        series: series,
+      };
+    
+      mychart.setOption(option);
+      mychart.resize();
     };
-    mychart.setOption(option);
+
+    // --- 3. EJECUCIÓN ---
+  
+    // A. Renderizar inmediatamente
+    renderResponsiveChart();
+
+    // B. Escuchar cambios de tamaño (Soluciona lo del F12)
+    // Nota: Al usar una función flecha dentro de procesarLecturas, capturamos el contexto
+    window.addEventListener('resize', renderResponsiveChart);
   }
 
   showHumedad(): void {
@@ -574,7 +818,7 @@ export class LecturasHumedadComponent implements OnInit {
   procesarNiveles(data: any): void {
     const echarts = require('echarts');
     const DomChart = document.getElementById('nivelesChart');
-    const chartNiveles = echarts.init(DomChart, 'dark', {
+    const chartNiveles = echarts.init(DomChart, { //'light' //'dark'
       renderer: 'canvas',
       useDirtyRect: false
     }); //, 'dark'
@@ -600,71 +844,141 @@ export class LecturasHumedadComponent implements OnInit {
       });
     }
 
-    const option = {
-      //backgroundColor: '#232526', //roundColor: '#0f375f',
-      tooltip: {
-        trigger: 'axis',
-        confine: true
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '15%',
-        top: '15%',
-        containLabel: true,
-      },
-      legend: {
-        data: series.map((s) => s.name),
-        type: 'scroll',
-        top: 8,
-        textStyle: {
-          fontSize: window.innerWidth < 768 ? 12 : 14
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: fecha_hora,
-        rotate: 45,
-      },
-      yAxis: {},
-      toolbox: {
-        right: 5,
-        top: 5,
-        feature: {
-          dataZoom: { yAxisIndex: 0 },
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {}
-        }
-      },
-      dataZoom: [
-        // { type: 'inside' },
-        // { type: 'slider' }
-        /**Esto para que tenga zoom horizontal y vertical */
-        {
-          type: 'slider',
-          xAxisIndex: 0,
-          filterMode: 'none'
+    const renderResponsiveChart = () => {
+      // 1. Detectar si es móvil
+      const isMobile = window.innerWidth < 768;
+
+      const option = {
+        //backgroundColor: '#232526', //roundColor: '#0f375f',
+        tooltip: {
+          trigger: 'axis',
+          confine: true,
+          textStyle: {
+            fontSize: isMobile ? 11 : 14 // Texto más pequeño en tooltip móvil
+          }
         },
-        {
-          type: 'slider',
-          yAxisIndex: 0,
-          filterMode: 'none'
+        grid: {
+          left: '3%',
+          right: '4%',
+          // En móvil damos más aire abajo para la leyenda, o arriba si decidimos apilar
+          top: '15%', 
+          bottom: '15%',
+          containLabel: true,
         },
-        {
-          type: 'inside',
-          xAxisIndex: 0,
-          filterMode: 'none'
+        legend: {
+          data: series.map((s) => s.name),
+          type: 'scroll',
+          top: isMobile ? 'auto' : 5,
+          bottom: isMobile ? 0 : 'auto', 
+          left: isMobile ? 'center' : 'left', 
+          width: isMobile ? '90%' : 'auto', // Limita el ancho para forzar scroll si es necesario
+          textStyle: {
+            fontSize: isMobile ? 10 : 12 
+          },
+          itemGap: isMobile ? 10 : 20,
+          pageButtonPosition: 'end' // Flechas de scroll al final
         },
-        {
-          type: 'inside',
-          yAxisIndex: 0,
-          filterMode: 'none'
-        }
-      ],
-      series: series,
+        xAxis: {
+          type: 'category',
+          data: fecha_hora,
+          rotate: 45,
+          axisLabel: {
+            // 1. INTERVALO: 'auto' deja que ECharts oculte las que no caben.
+            interval: 'auto',
+            // 2. ROTACIÓN: 0 grados en móvil (para leer recto) o 45 si hay muchas
+            rotate: isMobile ? 0 : 45,
+            // 3. TAMAÑO DE FUENTE
+            fontSize: isMobile ? 9 : 11,
+
+            // 4. EL FORMATEADOR (La parte mágica)
+            formatter: (value: string) => {
+              // Asumimos que value viene como "2025-12-03 10:26:03"
+              if (!value) return '';
+
+              // Creamos un objeto fecha (asegúrate que el string sea compatible)
+              // O simplemente manipulamos el string si el formato es fijo:
+              const partes = value.split(' '); // Separa ["2025-12-03", "10:26:03"]
+              
+              if (partes.length < 2) return value; // Si no tiene formato esperado, devuelve original
+              
+              const fecha = partes[0]; // 2025-12-03
+              const hora = partes[1].substring(0, 5); // 10:26 (quitamos los segundos si quieres)
+              
+              // Extraemos día y mes para hacerlo corto: 2025-12-03 -> 03/12
+              const fechaCorta = fecha.split('-').reverse().slice(0, 2).join('/'); 
+
+              if (isMobile) {
+                // EN MÓVIL: Dos líneas.
+                // Línea 1: Hora (más importante)
+                // Línea 2: Día/Mes
+                return `${hora}\n${fechaCorta}`;
+              } else {
+                // EN DESKTOP: Todo en una línea pero limpio
+                return `${fechaCorta} ${hora}`;
+              }
+            },
+            
+            // Ajuste de alineación para cuando usamos salto de línea
+            lineHeight: 14
+          }
+        },
+        yAxis: {},
+        toolbox: {
+          show: true, // Asegúrate de que esté true
+          top: 0,     // Pegado arriba
+          right: 10,  // A la derecha
+          itemSize: isMobile ? 14 : 18, // Iconos más pequeños en móvil para ganar espacio
+          itemGap: isMobile ? 12 : 10,  // Separación entre iconos
+          feature: { //Opciones
+            //Para poder realizar zoom al grafico
+            dataZoom: { yAxisIndex: 'none', title: { zoom: 'Zoom', back: 'Restaurar' } },
+            dataView: { readOnly: false, title: 'Ver datos' },
+            restore: {title: 'Restaurar'}, //Restaurar el grafico a su posición inicial
+            saveAsImage: {title: 'Guardar'} //Habilita el la exportación del grafico en formato png
+          },
+        },
+        dataZoom: [
+          // { type: 'inside' },
+          // { type: 'slider' }
+          /**Esto para que tenga zoom horizontal y vertical */
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            height: isMobile ? 15 : 30, // Hacemos la barra un poco más delgada en móvil
+            // bottom: 0,  // Pegado al fondo absoluto
+            handleSize: '100%' // Facilita el agarre con el dedo
+          },
+          {
+            type: 'slider',
+            yAxisIndex: 0,
+            filterMode: 'none',
+            width: isMobile ? 15 : 30,
+            // handleSize: '100%'
+          },
+          {
+            type: 'inside',
+            xAxisIndex: 0,
+            filterMode: 'none'
+          },
+          {
+            type: 'inside',
+            yAxisIndex: 0,
+            filterMode: 'none'
+          }
+        ],
+        series: series,
+      };
+      chartNiveles.setOption(option);
+      chartNiveles.resize();
     };
-    chartNiveles.setOption(option);
+
+    // --- 3. EJECUCIÓN ---
+    // A. Renderizar inmediatamente
+    renderResponsiveChart();
+    // B. Escuchar cambios de tamaño (Soluciona lo del F12)
+    // Nota: Al usar una función flecha dentro de procesarNiveles, capturamos el contexto
+    window.addEventListener('resize', renderResponsiveChart);
   }
 
   actualizarGraficoNivel(){

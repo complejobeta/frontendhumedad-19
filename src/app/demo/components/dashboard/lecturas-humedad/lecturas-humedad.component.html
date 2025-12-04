@@ -32,14 +32,14 @@
 <!-- Texto descriptivo -->
 <p class="descripcion-test text-center gap-4 mb-3">
     Fundo {{detallesConfig?.nombre_fundo}} | Lote  {{detallesConfig?.nombre_lote}} | Sublote: {{detallesConfig?.nombre_sublote}} - Hectareas {{detallesConfig?.hectareas}} || Estado: <p-tag
-              class="hoverable-tooltip"
-              [value]="estadoSensorConfig?.mensaje"
-              [severity]="getColorEstado(estadoSensorConfig?.tipo)"
-              [icon]="getIconEstado(estadoSensorConfig?.tipo)"
-              pTooltip="{{ getTooltipEstado(estadoSensorConfig?.tipo) }}"
-              tooltipPosition="bottom"
-            ></p-tag>
-            - UPS: {{estadoBateriaUps?.percent}} %
+        class="hoverable-tooltip"
+        [value]="estadoSensorConfig?.mensaje"
+        [severity]="getColorEstado(estadoSensorConfig?.tipo)"
+        [icon]="getIconEstado(estadoSensorConfig?.tipo)"
+        pTooltip="{{ getTooltipEstado(estadoSensorConfig?.tipo) }}"
+        tooltipPosition="bottom"
+    ></p-tag>
+    - UPS: {{estadoBateriaUps?.percent}} %
 </p>
 
 <!--Filtros de humedad, temperatura, sensor y por fechas-->
@@ -166,8 +166,11 @@
     class="w-full mb-3"
 ></p-multiSelect>
 
-<div echarts id="nivelesChart" class="demo-chart chart-rounded">
-</div>   
+<div class="card main-card mb-3">
+    <div class="card-body p-2">
+        <div echarts id="nivelesChart" class="demo-chart"></div>   
+    </div>
+</div>
 
 <p-dialog 
     [(visible)]="displayModal" 
@@ -195,7 +198,7 @@
                         <th>Nombre</th>
                         <th>Color</th>
                         <th>Tipo de linea</th>
-                        <th >OPERACIONES</th>
+                        <th >OP</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-entidad>
